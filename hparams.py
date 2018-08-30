@@ -57,12 +57,12 @@ hparams = tf.contrib.training.HParams(
 	outputs_per_step = 2, #number of frames to generate at each decoding step (speeds up computation and allows for higher batch size)
 	stop_at_any = True, #Determines whether the decoder should stop when predicting <stop> to any frame or to all of them
 
-	embedding_dim = 512, #dimension of embedding space
+	embedding_dim = 256, #dimension of embedding space
 
 	enc_conv_num_layers = 3, #number of encoder convolutional layers
 	enc_conv_kernel_size = (5, ), #size of encoder convolution filters for each layer
-	enc_conv_channels = 512, #number of encoder convolutions filters for each layer
-	encoder_lstm_units = 256, #number of lstm units for each direction (forward and backward)
+	enc_conv_channels = 256, #number of encoder convolutions filters for each layer
+	encoder_lstm_units = 128, #number of lstm units for each direction (forward and backward)
 
 	smoothing = False, #Whether to smooth the attention normalization function
 	attention_dim = 128, #dimension of attention space
@@ -70,9 +70,9 @@ hparams = tf.contrib.training.HParams(
 	attention_kernel = (31, ), #kernel size of attention convolution
 	cumulative_weights = True, #Whether to cumulate (sum) all previous attention weights or simply feed previous weights (Recommended: True)
 
-	prenet_layers = [256, 256], #number of layers and number of units of prenet
+	prenet_layers = [128, 256], #number of layers and number of units of prenet
 	decoder_layers = 2, #number of decoder lstm layers
-	decoder_lstm_units = 1024, #number of decoder lstm units on each layer
+	decoder_lstm_units = 512, #number of decoder lstm units on each layer
 	max_iters = 1000, #Max decoder steps during inference (Just for safety from infinite loop cases)
 
 	postnet_num_layers = 5, #number of postnet convolutional layers
@@ -116,9 +116,9 @@ hparams = tf.contrib.training.HParams(
 	freq_axis_kernel_size = 3,
 	leaky_alpha = 0.4,
 
-	gin_channels = -1, #Set this to -1 to disable global conditioning, Only used for multi speaker dataset. It defines the depth of the embeddings (Recommended: 16)
+	gin_channels = 16, #Set this to -1 to disable global conditioning, Only used for multi speaker dataset. It defines the depth of the embeddings (Recommended: 16)
 	use_speaker_embedding = True, #whether to make a speaker embedding
-	n_speakers = 5, #number of speakers (rows of the embedding)
+	n_speakers = 2, #number of speakers (rows of the embedding)
 
 	use_bias = True, #Whether to use bias in convolutional layers of the Wavenet
 
@@ -128,14 +128,14 @@ hparams = tf.contrib.training.HParams(
 
 	#Tacotron Training
 	tacotron_random_seed = 5339, #Determines initial graph and operations (i.e: model) random state for reproducibility
-	tacotron_swap_with_cpu = False, #Whether to use cpu as support to gpu for decoder computation (Not recommended: may cause major slowdowns! Only use when critical!)
+	tacotron_swap_with_cpu = True, #Whether to use cpu as support to gpu for decoder computation (Not recommended: may cause major slowdowns! Only use when critical!)
 
-	tacotron_batch_size = 32, #number of training samples on each training steps
+	tacotron_batch_size = 4, #number of training samples on each training steps
 	tacotron_reg_weight = 1e-6, #regularization weight (for L2 regularization)
 	tacotron_scale_regularization = True, #Whether to rescale regularization weight to adapt for outputs range (used when reg_weight is high and biasing the model)
 
 	tacotron_test_size = None, #% of data to keep as test data, if None, tacotron_test_batches must be not None
-	tacotron_test_batches = 48, #number of test batches (For Ljspeech: 10% ~= 41 batches of 32 samples)
+	tacotron_test_batches = 4, #number of test batches (For Ljspeech: 10% ~= 41 batches of 32 samples)
 	tacotron_data_random_state=1234, #random state for train test split repeatability
 
 	#Usually your GPU can handle 16x tacotron_batch_size during synthesis for the same memory amount during training (because no gradients to keep and ops to register for backprop)
@@ -198,6 +198,8 @@ hparams = tf.contrib.training.HParams(
 	###########################################################################################################################################
 
 	#Eval sentences (if no eval file was specified, these sentences are used for eval)
+
+
 	sentences = [
 	# From July 8, 2017 New York Times:
 	'Scientists at the CERN laboratory say they have discovered a new particle.',

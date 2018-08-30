@@ -139,7 +139,7 @@ class Feeder:
 		examples = [self._get_test_groups() for i in range(len(self._test_meta))]
 
 		# Bucket examples based on similar output sequence length for efficiency
-		examples.sort(key=lambda x: x[-2])
+		examples.sort(key=lambda x: x[-1])
 		batches = [examples[i: i+n] for i in range(0, len(examples), n)]
 		np.random.shuffle(batches)
 
@@ -156,7 +156,7 @@ class Feeder:
 			examples = [self._get_next_example() for i in range(n * _batches_per_group)]
 
 			# Bucket examples based on similar output sequence length for efficiency
-			examples.sort(key=lambda x: x[-2])
+			examples.sort(key=lambda x: x[-1])
 			batches = [examples[i: i+n] for i in range(0, len(examples), n)]
 			np.random.shuffle(batches)
 
@@ -201,7 +201,7 @@ class Feeder:
 		#Pad sequences with 1 to infer that the sequence is done
 		token_targets = self._prepare_token_targets([x[2] for x in batch], outputs_per_step)
 		linear_targets = self._prepare_targets([x[3] for x in batch], outputs_per_step)
-		targets_lengths = np.asarray([x[-2] for x in batch], dtype=np.int32) #Used to mask loss
+		targets_lengths = np.asarray([x[-1] for x in batch], dtype=np.int32) #Used to mask loss
 		return (inputs, input_lengths, mel_targets, token_targets, linear_targets, targets_lengths)
 
 	def _prepare_inputs(self, inputs):
