@@ -31,12 +31,12 @@ def build_from_path(hparams, input_dir, mel_dir, wav_dir, n_jobs=12, tqdm=lambda
 	for file in os.listdir(input_dir):
 		wav_path = os.path.join(input_dir, file)
 		basename = os.path.basename(wav_path).replace('.wav', '')
-		speacker_id = _get_speacker_id(basename)
+		speacker_id = get_speacker_id(basename)
 		futures.append(executor.submit(partial(_process_utterance, mel_dir, wav_dir, basename, wav_path, hparams,speacker_id)))
 
 	return [future.result() for future in tqdm(futures) if future.result() is not None]
 
-def _get_speacker_id(filename):
+def get_speacker_id(filename):
 	id = int(filename.split("-")[0][3:])
 	if id<51:
 			return 0
