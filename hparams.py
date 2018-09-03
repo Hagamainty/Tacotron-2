@@ -54,7 +54,7 @@ hparams = tf.contrib.training.HParams(
 	###########################################################################################################################################
 
 	#Tacotron
-	outputs_per_step = 2, #number of frames to generate at each decoding step (speeds up computation and allows for higher batch size)
+	outputs_per_step = 1, #number of frames to generate at each decoding step (speeds up computation and allows for higher batch size)
 	stop_at_any = True, #Determines whether the decoder should stop when predicting <stop> to any frame or to all of them
 
 	embedding_dim = 256, #dimension of embedding space
@@ -123,7 +123,7 @@ hparams = tf.contrib.training.HParams(
 	use_bias = True, #Whether to use bias in convolutional layers of the Wavenet
 
 	max_time_sec = None,
-	max_time_steps = 13000, #Max time steps in audio used to train wavenet (decrease to save memory) (Recommend: 8000 on modest GPUs, 13000 on stronger ones)
+	max_time_steps = 1300, #Max time steps in audio used to train wavenet (decrease to save memory) (Recommend: 8000 on modest GPUs, 13000 on stronger ones)
 	###########################################################################################################################################
 
 	#Tacotron Training
@@ -139,7 +139,7 @@ hparams = tf.contrib.training.HParams(
 	tacotron_data_random_state=1234, #random state for train test split repeatability
 
 	#Usually your GPU can handle 16x tacotron_batch_size during synthesis for the same memory amount during training (because no gradients to keep and ops to register for backprop)
-	tacotron_synthesis_batch_size = 32 * 16, #This ensures GTA synthesis goes up to 40x faster than one sample at a time and uses 100% of your GPU computation power.
+	tacotron_synthesis_batch_size = 16, #This ensures GTA synthesis goes up to 40x faster than one sample at a time and uses 100% of your GPU computation power.
 
 	tacotron_decay_learning_rate = True, #boolean, determines if the learning rate will follow an exponential decay
 	tacotron_start_decay = 50000, #Step at which learning decay starts
@@ -175,16 +175,16 @@ hparams = tf.contrib.training.HParams(
 
 	#Wavenet Training
 	wavenet_random_seed = 5339, # S=5, E=3, D=9 :)
-	wavenet_swap_with_cpu = False, #Whether to use cpu as support to gpu for decoder computation (Not recommended: may cause major slowdowns! Only use when critical!)
+	wavenet_swap_with_cpu = True, #Whether to use cpu as support to gpu for decoder computation (Not recommended: may cause major slowdowns! Only use when critical!)
 
-	wavenet_batch_size = 4, #batch size used to train wavenet.
+	wavenet_batch_size = 1, #batch size used to train wavenet.
 	wavenet_test_size = 0.0441, #% of data to keep as test data, if None, wavenet_test_batches must be not None
 	wavenet_test_batches = None, #number of test batches.
 	wavenet_data_random_state = 1234, #random state for train test split repeatability
 
 	#During synthesis, there is no max_time_steps limitation so the model can sample much longer audio than 8k(or 13k) steps. (Audio can go up to 500k steps, equivalent to ~21sec on 24kHz)
 	#Usually your GPU can handle 1x~2x wavenet_batch_size during synthesis for the same memory amount during training (because no gradients to keep and ops to register for backprop)
-	wavenet_synthesis_batch_size = 4 * 2, #This ensure that wavenet synthesis goes up to 4x~8x faster when synthesizing multiple sentences. Watch out for OOM with long audios.
+	wavenet_synthesis_batch_size = 1, #This ensure that wavenet synthesis goes up to 4x~8x faster when synthesizing multiple sentences. Watch out for OOM with long audios.
 
 	wavenet_learning_rate = 1e-3,
 	wavenet_adam_beta1 = 0.9,
