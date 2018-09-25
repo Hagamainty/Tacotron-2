@@ -13,12 +13,19 @@ from wavenet_vocoder.synthesize import wavenet_synthesize
 def prepare_run(args):
 	modified_hp = hparams.parse(args.hparams)
 	os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+	if(args.checkpoint_folder):
+		run_name = args.name or args.tacotron_name or args.model
+		taco_checkpoint = os.path.join(args.checkpoint_folder, 'logs-' + run_name, 'taco_' + args.checkpoint)
 
-	run_name = args.name or args.tacotron_name or args.model
-	taco_checkpoint = os.path.join('logs-' + run_name, 'taco_' + args.checkpoint)
+		run_name = args.name or args.wavenet_name or args.model
+		wave_checkpoint = os.path.join(args.checkpoint_folder,'logs-' + run_name, 'wave_' + args.checkpoint)
+	else:
+		run_name = args.name or args.tacotron_name or args.model
+		taco_checkpoint = os.path.join('logs-' + run_name, 'taco_' + args.checkpoint)
 
-	run_name = args.name or args.wavenet_name or args.model
-	wave_checkpoint = os.path.join('logs-' + run_name, 'wave_' + args.checkpoint)
+		run_name = args.name or args.wavenet_name or args.model
+		wave_checkpoint = os.path.join('logs-' + run_name, 'wave_' + args.checkpoint)
+	
 	return taco_checkpoint, wave_checkpoint, modified_hp
 
 def get_sentences(args):
@@ -45,6 +52,7 @@ def main():
 	accepted_modes = ['eval', 'synthesis', 'live']
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--checkpoint', default='pretrained/', help='Path to model checkpoint')
+	parser.add_argument('--checkpoint_folder', default='pretrained/', help='Path to folder containing model checkpoint')
 	parser.add_argument('--hparams', default='',
 		help='Hyperparameter overrides as a comma-separated list of name=value pairs')
 	parser.add_argument('--name', help='Name of logging directory if the two models were trained together.')

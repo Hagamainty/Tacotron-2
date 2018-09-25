@@ -11,7 +11,7 @@ from infolog import log
 from librosa import effects
 from tacotron.models import create_model
 from tacotron.utils import plot
-from tacotron.utils.text import text_to_sequence
+from tacotron.utils.text import text_to_sequence,sequence_to_text
 from datasets.wavenet_preprocessor import get_speacker_id
 
 class Synthesizer:
@@ -53,7 +53,7 @@ class Synthesizer:
 		saver.restore(self.session, checkpoint_path)
 
 
-	def synthesize(self, texts, basenames, out_dir, log_dir, mel_filenames):
+	def synthesize(self, texts, basenames, out_dir, log_dir, mel_filenames,speaker_id=0):
 		hparams = self._hparams
 		cleaner_names = [x.strip() for x in hparams.cleaners.split(',')]
 		seqs = [np.asarray(text_to_sequence(text, cleaner_names)) for text in texts]
@@ -63,7 +63,6 @@ class Synthesizer:
 			self.model.inputs: seqs,
 			self.model.input_lengths: np.asarray(input_lengths, dtype=np.int32),
 		}
-
 		if self.gta:
 			np_targets = [np.load(mel_filename) for mel_filename in mel_filenames]
 			target_lengths = [len(np_target) for np_target in np_targets]
@@ -109,10 +108,9 @@ class Synthesizer:
 			#Get speaker id for global conditioning (only used with GTA generally)
 			if hparams.gin_channels > 0:
 				# raise RuntimeError('Please set the speaker_id rule in line 99 of tacotron/synthesizer.py to allow for global condition usage later.')
-				speaker_id = get_speacker_id(basenames[i]) #set the rule to determine speaker id. By using the file basename maybe? (basenames are inside "basenames" variable)
+				
 				speaker_ids.append(speaker_id) #finish by appending the speaker id. (allows for different speakers per batch if your model is multispeaker)
 			else:
-				speaker_id = get_speacker_id(basenames[i])
 				speaker_ids.append(speaker_id)
 
 			# Write the spectrogram to disk
