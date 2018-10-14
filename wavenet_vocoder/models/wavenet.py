@@ -35,7 +35,10 @@ def _expand_global_features(batch_size, time_length, global_features, data_forma
 	# g = tf.cond(tf.equal(tf.rank(global_features), 2),
 	# 	lambda: tf.expand_dims(global_features, axis=-1),
 	# 	lambda: global_features)
-	g = tf.reshape(global_features, [tf.shape(global_features)[0], tf.shape(global_features)[1], 1])
+	global_features_shape = global_features.shape.as_list();
+	if(global_features_shape[0] is None):
+    		global_features_shape[0] = -1;
+	g = tf.reshape(global_features, [-1, global_features_shape[1], 1])
 	g_shape = tf.shape(g)
 
 	#[batch_size, channels, 1] ==> [batch_size, channels, time_length]
@@ -531,11 +534,10 @@ class WaveNet():
 		if g is not None:
 			if self.embed_speakers is not None:
 				#[batch_size, 1] ==> [batch_size, 1, gin_channels]
-				g = self.embed_speakers(tf.reshape(g, [batch_size, -1]))
+				g = self.embed_speakers(tf.reshape(g, [batch_size, 1]))
 				#[batch_size, gin_channels, 1]
 				with tf.control_dependencies([tf.assert_equal(tf.rank(g), 3)]):
 					g = tf.transpose(g, [0, 2, 1])
-
 		#Expand global conditioning features to all time steps
 		g_bct = _expand_global_features(batch_size, time_length, g, data_format='BCT')
 
