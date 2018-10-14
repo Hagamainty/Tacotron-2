@@ -64,7 +64,7 @@ class Synthesizer:
 		saver.restore(self.session, checkpoint_path)
 
 
-	def synthesize(self, texts, basenames, out_dir, log_dir, mel_filenames):
+	def synthesize(self, texts, basenames, out_dir, log_dir, mel_filenames,subjects):
 		hparams = self._hparams
 		cleaner_names = [x.strip() for x in hparams.cleaners.split(',')]
 
@@ -176,8 +176,8 @@ class Synthesizer:
 		for i, mel in enumerate(mels):
 			#Get speaker id for global conditioning (only used with GTA generally)
 			if hparams.gin_channels > 0:
-				raise RuntimeError('Please set the speaker_id rule in line 99 of tacotron/synthesizer.py to allow for global condition usage later.')
-				speaker_id = '<no_g>' #set the rule to determine speaker id. By using the file basename maybe? (basenames are inside "basenames" variable)
+				# raise RuntimeError('Please set the speaker_id rule in line 99 of tacotron/synthesizer.py to allow for global condition usage later.')
+				speaker_id = int(subjects[i]) #set the rule to determine speaker id. By using the file basename maybe? (basenames are inside "basenames" variable)
 				speaker_ids.append(speaker_id) #finish by appending the speaker id. (allows for different speakers per batch if your model is multispeaker)
 			else:
 				speaker_id = '<no_g>'
