@@ -112,7 +112,6 @@ def run_synthesis(args, checkpoint_path, output_dir, hparams):
 
 			for elems in zip(wav_filenames, mel_filenames, mel_output_filenames, speaker_ids, texts):
 				file.write('|'.join([str(x) for x in elems]) + '\n')
-			break;
 	log('synthesized mel spectrograms at {}'.format(synth_dir))
 	return os.path.join(synth_dir, 'map.txt')
 
