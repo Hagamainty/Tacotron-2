@@ -121,7 +121,7 @@ hparams = tf.contrib.training.HParams(
 	#Encoder parameters
 	enc_conv_num_layers = 3, #number of encoder convolutional layers
 	enc_conv_kernel_size = (5, ), #size of encoder convolution filters for each layer
-	enc_conv_channels = 512, #number of encoder convolutions filters for each layer
+	enc_conv_channels = 256, #number of encoder convolutions filters for each layer
 	encoder_lstm_units = 256, #number of lstm units for each direction (forward and backward)
 
 	#Attention mechanism
@@ -134,7 +134,7 @@ hparams = tf.contrib.training.HParams(
 	#Decoder
 	prenet_layers = [256, 256], #number of layers and number of units of prenet
 	decoder_layers = 2, #number of decoder lstm layers
-	decoder_lstm_units = 1024, #number of decoder lstm units on each layer
+	decoder_lstm_units = 512, #number of decoder lstm units on each layer
 	max_iters = 2000, #Max decoder steps during inference (Just for safety from infinite loop cases)
 
 	#Residual postnet
@@ -196,16 +196,16 @@ hparams = tf.contrib.training.HParams(
 	leaky_alpha = 0.4, #slope of the negative portion of LeakyRelu (LeakyRelu: y=x if x>0 else y=alpha * x)
 
 	#global conditioning
-	gin_channels = -1, #Set this to -1 to disable global conditioning, Only used for multi speaker dataset. It defines the depth of the embeddings (Recommended: 16)
+	gin_channels = 16, #Set this to -1 to disable global conditioning, Only used for multi speaker dataset. It defines the depth of the embeddings (Recommended: 16)
 	use_speaker_embedding = True, #whether to make a speaker embedding
-	n_speakers = 5, #number of speakers (rows of the embedding)
+	n_speakers = 2, #number of speakers (rows of the embedding)
 
 	#the bias debate! :)
 	use_bias = True, #Whether to use bias in convolutional layers of the Wavenet
 
 	#training samples length
 	max_time_sec = None, #Max time of audio for training. If None, we use max_time_steps.
-	max_time_steps = 11000, #Max time steps in audio used to train wavenet (decrease to save memory) (Recommend: 8000 on modest GPUs, 13000 on stronger ones)
+	max_time_steps = 8000, #Max time steps in audio used to train wavenet (decrease to save memory) (Recommend: 8000 on modest GPUs, 13000 on stronger ones)
 	###########################################################################################################################################
 
 	#Tacotron Training
@@ -217,7 +217,7 @@ hparams = tf.contrib.training.HParams(
 	tacotron_swap_with_cpu = False, #Whether to use cpu as support to gpu for decoder computation (Not recommended: may cause major slowdowns! Only use when critical!)
 
 	#train/test split ratios, mini-batches sizes
-	tacotron_batch_size = 32, #number of training samples on each training steps
+	tacotron_batch_size = 4, #number of training samples on each training steps
 	#Tacotron Batch synthesis supports ~16x the training batch size (no gradients during testing). 
 	#Training Tacotron with unmasked paddings makes it aware of them, which makes synthesis times different from training. We thus recommend masking the encoder.
 	tacotron_synthesis_batch_size = 1, #DO NOT MAKE THIS BIGGER THAN 1 IF YOU DIDN'T TRAIN TACOTRON WITH "mask_encoder=True"!!
@@ -270,10 +270,10 @@ hparams = tf.contrib.training.HParams(
 	wavenet_swap_with_cpu = False, #Whether to use cpu as support to gpu for synthesis computation (while loop).(Not recommended: may cause major slowdowns! Only use when critical!)
 
 	#train/test split ratios, mini-batches sizes
-	wavenet_batch_size = 8, #batch size used to train wavenet.
+	wavenet_batch_size = 2, #batch size used to train wavenet.
 	#During synthesis, there is no max_time_steps limitation so the model can sample much longer audio than 8k(or 13k) steps. (Audio can go up to 500k steps, equivalent to ~21sec on 24kHz)
 	#Usually your GPU can handle ~2x wavenet_batch_size during synthesis for the same memory amount during training (because no gradients to keep and ops to register for backprop)
-	wavenet_synthesis_batch_size = 10 * 2, #This ensure that wavenet synthesis goes up to 4x~8x faster when synthesizing multiple sentences. Watch out for OOM with long audios.
+	wavenet_synthesis_batch_size = 4 * 2, #This ensure that wavenet synthesis goes up to 4x~8x faster when synthesizing multiple sentences. Watch out for OOM with long audios.
 	wavenet_test_size = 0.0441, #% of data to keep as test data, if None, wavenet_test_batches must be not None
 	wavenet_test_batches = None, #number of test batches.
 
