@@ -364,9 +364,9 @@ class WaveNet():
 					#[batch_size, local_condition_dimension, local_condition_time]
 					#time_length will be corrected using the upsample network
 					c = tf.transpose(c, [0, 2, 1])
-
+		
 				if g is not None:
-					assert g.shape == (batch_size, 1)
+					assert g.shape[1] ==  1
 
 				#Start silence frame
 				if is_mulaw_quantize(hparams.input_type):
