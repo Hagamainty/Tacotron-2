@@ -64,7 +64,8 @@ def run_eval(args, checkpoint_path, output_dir, hparams, sentences):
 		for i, texts in enumerate(tqdm(sentences)):
 			start = time.time()
 			basenames = ['batch_{}_sentence_{}'.format(i, j) for j in range(len(texts))]
-			mel_filenames, speaker_ids = synth.synthesize(texts, basenames, eval_dir, log_dir, None)
+			subjects = [args.speaker_id for t in texts]
+			mel_filenames, speaker_ids = synth.synthesize(texts, basenames, eval_dir, log_dir, None,subjects)
 
 			for elems in zip(texts, mel_filenames, speaker_ids):
 				file.write('|'.join([str(x) for x in elems]) + '\n')
