@@ -116,7 +116,7 @@ hparams = tf.contrib.training.HParams(
 	outputs_per_step = 1, #number of frames to generate at each decoding step (increase to speed up computation and allows for higher batch size, decreases G&L audio quality)
 	stop_at_any = True, #Determines whether the decoder should stop when predicting <stop> to any frame or to all of them (True works pretty well)
 
-	embedding_dim = 512, #dimension of embedding space
+	embedding_dim = 256, #dimension of embedding space
 
 	#Encoder parameters
 	enc_conv_num_layers = 3, #number of encoder convolutional layers

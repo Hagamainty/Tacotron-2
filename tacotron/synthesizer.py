@@ -11,8 +11,8 @@ from infolog import log
 from librosa import effects
 from tacotron.models import create_model
 from tacotron.utils import plot
-from tacotron.utils.text import text_to_sequence
-
+from tacotron.utils.text import text_to_sequence,sequence_to_text
+from datasets.wavenet_preprocessor import get_speacker_id
 
 class Synthesizer:
 	def load(self, checkpoint_path, hparams, gta=False, model_name='Tacotron'):
@@ -65,7 +65,7 @@ class Synthesizer:
 
 
 	def synthesize(self, texts, basenames, out_dir, log_dir, mel_filenames,subjects):
-		hparams = self._hparams
+    		hparams = self._hparams
 		cleaner_names = [x.strip() for x in hparams.cleaners.split(',')]
 
 		#Repeat last sample until number of samples is dividable by the number of GPUs (last run scenario)
@@ -94,7 +94,6 @@ class Synthesizer:
 			self.inputs: input_seqs,
 			self.input_lengths: np.asarray(input_lengths, dtype=np.int32),
 		}
-
 		if self.gta:
 			np_targets = [np.load(mel_filename) for mel_filename in mel_filenames]
 			target_lengths = [len(np_target) for np_target in np_targets]
@@ -180,7 +179,6 @@ class Synthesizer:
 				speaker_id = int(subjects[i]) #set the rule to determine speaker id. By using the file basename maybe? (basenames are inside "basenames" variable)
 				speaker_ids.append(speaker_id) #finish by appending the speaker id. (allows for different speakers per batch if your model is multispeaker)
 			else:
-				speaker_id = '<no_g>'
 				speaker_ids.append(speaker_id)
 
 			# Write the spectrogram to disk

@@ -44,7 +44,7 @@ def build_from_path(hparams, input_dirs, mel_dir, linear_dir, wav_dir, n_jobs=12
 
 
 def _process_utterance(mel_dir, linear_dir, wav_dir, index, wav_path, text, subject, hparams):
-	"""
+    	"""
 	Preprocesses a single utterance wav/text pair
 
 	this writes the mel scale spectogram to disk and return a tuple to write
